@@ -173,9 +173,8 @@ xmax = np.array(list(map(lambda b: b.x1, bboxes.flat))).reshape(axes.shape).max(
 xmin = np.array(list(map(lambda b: b.x0, bboxes.flat))).reshape(axes.shape).min()
 
 # Draw a horizontal line at those coordinates
-line = plt.Line2D([xmin,xmax],[0.15, 0.15], transform=fig.transFigure, color="darkgrey")
+line = plt.Line2D([0.245, 0.891],[0.1, 0.1], transform=fig.transFigure, color="black")
 fig.add_artist(line)
-
 
 # Figure admin
 gs.tight_layout(fig)

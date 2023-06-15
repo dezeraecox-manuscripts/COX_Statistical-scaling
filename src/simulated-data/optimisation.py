@@ -70,7 +70,6 @@ for penalty in factors:
         group_cols=['dataset'], 
         popmean=500, 
         penalty_factor=penalty, 
-        zero_norm=False
         )
     df['penalty_factor'] = penalty
     smoothed_data.append(df)

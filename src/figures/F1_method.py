@@ -1,3 +1,4 @@
+import matplotlib.patches as patches
 import os
 import pandas as pd
 import numpy as np
@@ -140,6 +141,17 @@ axC.set_xlabel('Position')
 
 handles, labels = axC.get_legend_handles_labels()
 axC.legend([handles[x] for x in [3, 0, 1, 2]], ['Ground truth', 'Noise range', 'Sample value', 'Scaled value'], loc='lower right', frameon=False, labelspacing = 0.1)
+
+boxes = [
+    (14, -1.1, 2, 2.7),
+    (28, -1.1, 2, 2.7),
+]
+
+for x, y, width, height in boxes:
+    # Create a Rectangle patch
+    rect = patches.Rectangle((x, y), width, height, linewidth=1, edgecolor='black', facecolor='none')
+    # Add the patch to the Axes
+    axC.add_patch(rect)
     
 # Figure admin
 gs.tight_layout(fig)

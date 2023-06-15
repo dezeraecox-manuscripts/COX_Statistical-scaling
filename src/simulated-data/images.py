@@ -63,12 +63,11 @@ point_data = pd.melt(
 summary = noised_data.copy()
 for penalty_factor in [2, 20, 200, 2000]:
     smoothed_data = [pval_smoothing(
-            df, 
+            df.reset_index(),
             sample_cols=['value'], 
-            group_cols=['x', 'y'], 
+            group_cols=['x', 'y', 'original'], 
             popmean=value, 
             penalty_factor=penalty_factor, 
-            zero_norm=False
         ) for value, df in point_data.groupby('original')]
     smoothed_data = pd.concat(smoothed_data).reset_index().rename(columns={'value': f'{penalty_factor}_smooth_value'})
     # Add mean noised values, calculate residuals
@@ -80,18 +79,3 @@ for col in ['noised_1', 'noised_mean']+[col for col in summary.columns.tolist() 
 # Save to csv
 summary.to_csv(f'{output_folder}smoothed_summary.csv')
 
-
-# Visualise residuals distribution, focusing on penalty of 20
-palette = {
-    'noised_1': 'firebrick', 
-    'noised_mean': 'darkorange', 
-    '20_smooth_value':'rebeccapurple'
-    }
-
-for_plotting = pd.melt(
-    summary.copy(),
-    id_vars=['x', 'y'], 
-    value_vars=['noised_1', 'noised_mean', '20_smooth_value'], 
-    var_name='data_type', 
-    value_name='value'
-)
