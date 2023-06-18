@@ -154,6 +154,7 @@ for x, y, width, height in boxes:
     axC.add_patch(rect)
     
 # Figure admin
+axC.spines[['right', 'top']].set_visible(False)
 gs.tight_layout(fig)
 plt.savefig(f'{output_folder}F1_Simulated.svg')
 plt.show()
