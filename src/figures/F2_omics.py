@@ -316,15 +316,24 @@ boxes = [
     (0, 0, 91, 5, '#E3B504', 'Raw'), #raw
     (0, 6, 91, 1, '#420264', 'Pop.'), #total
     (0, 8, 91, 5, '#B0185E', 'Scaled'), #smooth
+    (2, 2, 1, 2, 'black', ''),  # highlight 1
+    (2, 10, 1, 2, 'black', ''),  # highlight 1
+    (17, 2, 1, 2, 'black', ''),  # highlight 1
+    (17, 10, 1, 2, 'black', ''),  # highlight 1
 ]
 
 for x, y, width, height, color, label in boxes:
+    if label:
+        linewidth = 2
+        linestyle = '-'
+        axG1.annotate(label, xy=(-3, y+(height/2)+0.5), rotation=90, annotation_clip=False, ha='center')
+    else:
+        linewidth = 0.5
+        linestyle = '--'
     # Create a Rectangle patch
-    rect = patches.Rectangle((x, y), width, height, linewidth=2, edgecolor=color, facecolor='none', clip_on=False)
+    rect = patches.Rectangle((x, y), width, height, linewidth=linewidth, linestyle=linestyle, edgecolor=color, facecolor='none', clip_on=False)
     # Add the patch to the Axes
     axG1.add_patch(rect)
-    
-    axG1.annotate(label, xy=(-3, y+(height/2)+0.5), rotation=90, annotation_clip=False, ha='center')
     
 # Figure admin
 for ax in [axA, axB, axC, axD, axE, axF]:
