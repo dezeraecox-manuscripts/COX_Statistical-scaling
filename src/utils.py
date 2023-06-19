@@ -459,3 +459,39 @@ def correlation_df(x, y, corr_type=None):
         count = len(data)
         return pd.DataFrame([pearsons_r, pearsons_p, spearmans_r, spearmans_p, count], index=['pearsons_r', 'pearsons_pval', 'spearmans_r', 'spearmans_pval', 'count'])
 
+# ==============Plotting==============
+
+def volcano(df, cat_col, palette, ax=None, x_range=None, upper=None, lower=None, size=80):
+    
+    kws = {"s": size, "linewidth": 0.5}
+    
+    if not ax:
+        fig, ax = plt.subplots(figsize=(10, 10))
+    df[['face', 'edge', 'width']] = [[color[0], color[1], color[2]]
+                            for color in df[cat_col].map(palette)]
+
+    for dtype, config in palette.items():
+        dataframe = df[df[cat_col] == dtype].copy()
+        sns.scatterplot(
+            data=dataframe,
+            x='log2_meanratio', y='-log10(pval)',
+            facecolor=config[0],
+            edgecolor=config[1],
+            linewidth=config[2],
+            ax=ax,
+            s=size
+        )
+    handles, labels = zip(*[
+        (ax.scatter([], [], ec=edge if face == '#ffffff' else face, facecolor=face, **kws), key) for key, (face, edge, _) in palette.items()
+    ])
+    ax.legend(handles, labels, title='', frameon=False, loc='upper left', borderaxespad=-0.1, handletextpad=-0.5)
+    
+    if x_range:
+        ax.set_xlim(-x_range, x_range)
+    if upper and lower:
+        ax.axhline(1.3, linestyle='--', color='black', linewidth=0.3)
+        ax.axvline(upper, linestyle='--', color='black', linewidth=0.3)
+        ax.axvline(lower, linestyle='--', color='black', linewidth=0.3)
+    ax.set_ylabel('- $Log_{10}$ (p-value)')
+    ax.set_xlabel('$Log_2$(Ratio)', labelpad=0.1)
+    

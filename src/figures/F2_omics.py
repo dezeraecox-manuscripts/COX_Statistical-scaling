@@ -9,6 +9,7 @@ from matplotlib.gridspec import GridSpec, GridSpecFromSubplotSpec
 import matplotlib.transforms as mtransforms
 from seaborn import blend_palette
 
+from src.utils import volcano
 from loguru import logger
 
 logger.info('Import OK')
@@ -27,15 +28,47 @@ matplotlib.rc('font', **font)
 plt.rcParams['svg.fonttype'] = 'none'
 cm = 1/2.54  # centimeters in inches
 
-# ==============Read in datasets==============
 
+volc_config = {
+    'NS/NA': ['#b0b4b4', '#ffffff', 0.1],
+    'NS/A': ['#ffffff', '#000000', 0.5],
+    'S/A': ['#000000', '#ffffff', 0.1],
+}
+
+palette = {
+    'raw': '#E3B504',
+    'smooth': '#B0185E',
+    'total': '#420264',
+}
+
+# Heatmap blended palette
+def color_order(color):
+    return coolors[color]
+
+coolors = {'#4f3130': 1, '#644a4a': 2, '#796263': 3, '#d6d0d4': 4, '#f4f4f9': 5, '#e9aa95': 6, '#e38563': 7, '#e0734a': 8, '#dd6031': 9, }
+coolors = sorted([item for sublist in [list(coolors)[:3]*4] + [list(coolors)[3:6]] + [list(coolors)[6:]*4] for item in sublist], key=color_order)
+coolors = blend_palette(coolors, n_colors=100, as_cmap=True)
+
+# ==============Read in datasets==============
 # Complete volcano
 complete_volcano = pd.read_csv(f'{input_folder}volcano.csv')
-complete_volcano = complete_volcano[complete_volcano['dataset'] == 'Bader'].copy().dropna()
+complete_volcano = complete_volcano[(complete_volcano['dataset'] == 'Bader') & (complete_volcano['type'] == 'experimental')].copy().dropna()
+cv_lower, cv_upper = np.percentile(
+    complete_volcano['log2_meanratio'].values, [5, 95])
+cv_range = complete_volcano['log2_meanratio'].abs(
+).max() + np.max([abs(lower), abs(upper)])
+complete_volcano['category'] = ['S/A' if ((pval > 1.3) & ((val > upper) | (val < lower))) else ('NS/A' if ((pval < 1.3) & (
+    (val > upper) | (val < lower))) else 'NS/NA') for val, pval in complete_volcano[['log2_meanratio', '-log10(pval)']].values]
 
 # Subsampled volcano
 sampled_volc = pd.read_csv(f'{input_folder}thresholded.csv')
-sampled_volc_rep = sampled_volc[sampled_volc['combination'] == 84].copy()
+sampled_volc_rep = sampled_volc[sampled_volc['combination'] == 84].copy().dropna()
+
+sampled_volc_rep['log2_meanratio'] = sampled_volc_rep['mean_log2_ratio']
+sv_lower, sv_upper = sampled_volc_rep[['lower', 'upper']].values[0]
+sv_range = sampled_volc_rep['log2_meanratio'].abs().max() + np.max([abs(lower), abs(upper)])
+
+sampled_volc_rep['category'] = ['S/A' if ((pval > 1.3) & ((val > upper) | (val < lower))) else ('NS/A' if ((pval < 1.3) & ((val > upper) | (val < lower))) else 'NS/NA') for val, pval in sampled_volc_rep[['log2_meanratio', '-log10(pval)']].values]
 
 # Effect size
 effect = pd.read_csv(f'{input_folder}effect_size.csv')
@@ -58,44 +91,6 @@ heatmap = pd.read_csv(f'{input_folder}heatmap.csv')
 # Clean dfs
 for df in [complete_volcano, sampled_volc, effect, distribution_all, distribution_rep, distances, heatmap]:
     df.drop([col for col in df.columns.tolist() if 'Unnamed: ' in col], axis=1, inplace=True)
-    
-# ==============Define functions==============
-
-def volcano(df, cat_col, palette, ax=None, x_range=None, upper=None, lower=None, size=80):
-    
-    kws = {"s": size, "linewidth": 0.5}
-    
-    if not ax:
-        fig, ax = plt.subplots(figsize=(10, 10))
-    df[['face', 'edge', 'width']] = [[color[0], color[1], color[2]]
-                            for color in df[cat_col].map(palette)]
-
-    for dtype, config in palette.items():
-        dataframe = df[df[cat_col] == dtype].copy()
-        sns.scatterplot(
-            data=dataframe,
-            x='log2_meanratio', y='-log10(pval)',
-            facecolor=config[0],
-            edgecolor=config[1],
-            linewidth=config[2],
-            ax=ax,
-            s=size
-        )
-    handles, labels = zip(*[
-        (ax.scatter([], [], ec=edge if face == '#ffffff' else face, facecolor=face, **kws), key) for key, (face, edge, _) in palette.items()
-    ])
-    ax.legend(handles, labels, title='', frameon=False, loc='upper left', borderaxespad=-0.1, handletextpad=-0.5)
-    
-    if x_range:
-        ax.set_xlim(-x_range, x_range)
-    if upper and lower:
-        ax.axhline(1.3, linestyle='--', color='black', linewidth=0.3)
-        ax.axvline(upper, linestyle='--', color='black', linewidth=0.3)
-        ax.axvline(lower, linestyle='--', color='black', linewidth=0.3)
-    ax.set_ylabel('- $Log_{10}$ (p-value)')
-    ax.set_xlabel('$Log_2$(Ratio)', labelpad=0.1)
-    
-
 
 # ==============Generate figure==============
 
@@ -135,36 +130,12 @@ for label, (ax, xy) in axes.items():
             fontsize=12, va='bottom', fontweight='bold')
 
 # ------------Panel A------------
-df = complete_volcano[complete_volcano['type'] == 'experimental'].copy()
-lower, upper = np.percentile(df['log2_meanratio'].values, [5, 95])
 
-x_range = df['log2_meanratio'].abs().max() + np.max([abs(lower), abs(upper) ])
-df['category'] = ['S/A' if ((pval > 1.3) & ((val > upper) | (val < lower) )) else ('NS/A' if ((pval < 1.3) & ((val > upper) | (val < lower) )) else 'NS/NA') for val, pval in df[['log2_meanratio', '-log10(pval)']].values]
-
-volc_palette = {
-    'NS/NA': ['#b0b4b4', '#ffffff', 0.1],
-    'NS/A': ['#ffffff', '#000000', 0.5],
-    'S/A': ['#000000', '#ffffff', 0.1],
-}
-
-volcano(df=df, cat_col='category', palette=volc_palette, ax=axA, x_range=x_range, upper=upper, lower=lower, size=10)
+volcano(df=complete_volcano, cat_col='category', palette=volc_config, ax=axA, x_range=cv_range, upper=cv_upper, lower=cv_lower, size=10)
 
 # ------------Panel B------------
-sampled_volc_rep['log2_meanratio'] = sampled_volc_rep['mean_log2_ratio']
-sampled_volc_rep.dropna(inplace=True)
-lower, upper = sampled_volc_rep[['lower', 'upper']].values[0]
-x_range = sampled_volc_rep['log2_meanratio'].abs().max() + np.max([abs(lower), abs(upper)])
 
-sampled_volc_rep['category'] = ['S/A' if ((pval > 1.3) & ((val > upper) | (val < lower))) else ('NS/A' if ((pval < 1.3) & (
-    (val > upper) | (val < lower))) else 'NS/NA') for val, pval in sampled_volc_rep[['log2_meanratio', '-log10(pval)']].values]
-
-volc_palette = {
-    'NS/NA': ['#b0b4b4', '#ffffff', 0.1],
-    'NS/A': ['#ffffff', '#000000', 0.5],
-    'S/A': ['#000000', '#ffffff', 0.1],
-}
-
-volcano(df=sampled_volc_rep, cat_col='category', palette=volc_palette, ax=axB, x_range=x_range, upper=upper, lower=lower, size=10)
+volcano(df=sampled_volc_rep, cat_col='category', palette=volc_config, ax=axB, x_range=sv_range, upper=sv_upper, lower=sv_lower, size=10)
 
 # ------------Panel C------------
 lower, upper = effect[['lower', 'upper']].values[0]
@@ -176,9 +147,9 @@ for dtype, df in effect.dropna(subset=['log2_meanratio', '-log10(pval)']).groupb
     sns.stripplot(
         data=df,
         x='raw_label', y='log2_meanratio',
-        color=volc_palette[dtype][0],
-        edgecolor=volc_palette[dtype][1],
-        linewidth=volc_palette[dtype][2],
+        color=volc_config[dtype][0],
+        edgecolor=volc_config[dtype][1],
+        linewidth=volc_config[dtype][2],
         order=['S/A', 'NS/A', 'NS/NA'],
         ax=axC,
         jitter=True,
@@ -200,12 +171,6 @@ axC.set_ylabel('Effect size')
 axC.set_xlabel('Category', labelpad=0.2)
 
 # ------------Panel D------------
-
-palette = {
-    'raw': '#E3B504',
-    'smooth': '#B0185E',
-    'total': '#420264',
-}
 
 for dtype, col in zip(['Population', 'Raw', 'Scaled'], ['total', 'raw', 'smooth']):
     if col == 'total':
@@ -284,19 +249,10 @@ axF.set_xlabel('')
 
 # ------------Panel G------------
 
-coolors = {'#4f3130': 1, '#644a4a': 2, '#796263': 3, '#d6d0d4': 4, '#f4f4f9': 5, '#e9aa95': 6, '#e38563': 7, '#e0734a': 8, '#dd6031': 9, }
-
-def color_order(color):
-    return coolors[color]
-
-palette = sorted([item for sublist in [list(coolors)[:3]*4] + [list(coolors)[3:6]] + [list(coolors)[6:]*4] for item in sublist], key=color_order)
-
-palette = blend_palette(palette, n_colors=100, as_cmap=True)
-
 hm = sns.heatmap(
     heatmap.drop('Protein_IDs', axis=1).sort_values('total', ascending=False).T,
     center=0,
-    cmap=palette,
+    cmap=coolors,
     vmin=-0.2, vmax=0.2,
     cbar=False,
     ax=axG1
@@ -311,7 +267,7 @@ cax.yaxis.set_ticks_position('left')
 axG1.axis('off')
 axG2.axis('off')
 
-
+# Add highlight boxes and annotations
 boxes = [
     (0, 0, 91, 5, '#E3B504', 'Raw'), #raw
     (0, 6, 91, 1, '#420264', 'Pop.'), #total
