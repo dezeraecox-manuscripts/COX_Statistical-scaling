@@ -56,9 +56,9 @@ complete_volcano = complete_volcano[(complete_volcano['dataset'] == 'Bader') & (
 cv_lower, cv_upper = np.percentile(
     complete_volcano['log2_meanratio'].values, [5, 95])
 cv_range = complete_volcano['log2_meanratio'].abs(
-).max() + np.max([abs(lower), abs(upper)])
-complete_volcano['category'] = ['S/A' if ((pval > 1.3) & ((val > upper) | (val < lower))) else ('NS/A' if ((pval < 1.3) & (
-    (val > upper) | (val < lower))) else 'NS/NA') for val, pval in complete_volcano[['log2_meanratio', '-log10(pval)']].values]
+).max() + np.max([abs(cv_lower), abs(cv_upper)])
+complete_volcano['category'] = ['S/A' if ((pval > 1.3) & ((val > cv_upper) | (val < cv_lower))) else ('NS/A' if ((pval < 1.3) & (
+    (val > cv_upper) | (val < cv_lower))) else 'NS/NA') for val, pval in complete_volcano[['log2_meanratio', '-log10(pval)']].values]
 
 # Subsampled volcano
 sampled_volc = pd.read_csv(f'{input_folder}thresholded.csv')
@@ -66,9 +66,9 @@ sampled_volc_rep = sampled_volc[sampled_volc['combination'] == 84].copy().dropna
 
 sampled_volc_rep['log2_meanratio'] = sampled_volc_rep['mean_log2_ratio']
 sv_lower, sv_upper = sampled_volc_rep[['lower', 'upper']].values[0]
-sv_range = sampled_volc_rep['log2_meanratio'].abs().max() + np.max([abs(lower), abs(upper)])
+sv_range = sampled_volc_rep['log2_meanratio'].abs().max() + np.max([abs(sv_lower), abs(sv_upper)])
 
-sampled_volc_rep['category'] = ['S/A' if ((pval > 1.3) & ((val > upper) | (val < lower))) else ('NS/A' if ((pval < 1.3) & ((val > upper) | (val < lower))) else 'NS/NA') for val, pval in sampled_volc_rep[['log2_meanratio', '-log10(pval)']].values]
+sampled_volc_rep['category'] = ['S/A' if ((pval > 1.3) & ((val > sv_upper) | (val < sv_lower))) else ('NS/A' if ((pval < 1.3) & ((val > sv_upper) | (val < sv_lower))) else 'NS/NA') for val, pval in sampled_volc_rep[['log2_meanratio', '-log10(pval)']].values]
 
 # Effect size
 effect = pd.read_csv(f'{input_folder}effect_size.csv')
