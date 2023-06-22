@@ -461,7 +461,7 @@ def correlation_df(x, y, corr_type=None):
 
 # ==============Plotting==============
 
-def volcano(df, cat_col, palette, ax=None, x_range=None, upper=None, lower=None, size=80):
+def volcano(df, cat_col, palette, ax=None, x_range=None, upper=None, lower=None, size=80, legend_loc='upper left'):
     
     kws = {"s": size, "linewidth": 0.5}
     
@@ -484,7 +484,7 @@ def volcano(df, cat_col, palette, ax=None, x_range=None, upper=None, lower=None,
     handles, labels = zip(*[
         (ax.scatter([], [], ec=edge if face == '#ffffff' else face, facecolor=face, **kws), key) for key, (face, edge, _) in palette.items()
     ])
-    ax.legend(handles, labels, title='', frameon=False, loc='upper left', borderaxespad=-0.1, handletextpad=-0.5)
+    ax.legend(handles, labels, title='', frameon=False, loc=legend_loc, borderpad=-0.1, borderaxespad=-0.3, handletextpad=-0.5, labelspacing=0.1)
     
     if x_range:
         ax.set_xlim(-x_range, x_range)
@@ -492,6 +492,6 @@ def volcano(df, cat_col, palette, ax=None, x_range=None, upper=None, lower=None,
         ax.axhline(1.3, linestyle='--', color='black', linewidth=0.3)
         ax.axvline(upper, linestyle='--', color='black', linewidth=0.3)
         ax.axvline(lower, linestyle='--', color='black', linewidth=0.3)
-    ax.set_ylabel('- $Log_{10}$ (p-value)')
-    ax.set_xlabel('$Log_2$(Ratio)', labelpad=0.1)
+    ax.set_ylabel('- $Log_{10}$ (p-value)', labelpad=0.1)
+    ax.set_xlabel('$Log_2$(Ratio)', labelpad=-0.1)
     
