@@ -253,7 +253,7 @@ axG.legend('', frameon=False)
 axG.set_yticks([8.5, 18.5, 28.5, 38.5, 48.5, 58.5, ])
 axG.set_yticklabels(list(y_pos.keys()), rotation=90, ha='center', rotation_mode='anchor')
 axG.set_ylabel('')
-axG.set_xlabel('Normalised $Log{_2}$ Ratio', labelpad=0.2)
+axG.set_xlabel('Normalised Log$_{2}$ Ratio', labelpad=0.2)
 axG.set_ylim(63, 3.5)
 axG.axvline(0, color='lightgrey', linestyle='--', linewidth=0.5)
 axG.tick_params(axis='y',  pad=5)
@@ -326,5 +326,5 @@ for source, data in correlations.groupby('source'):
 for ax in [axA, axB, axC, axD, axE, axF, axG, axH, axI, axJ]:
     ax.spines[['right', 'top']].set_visible(False)
     
-plt.savefig(f'{output_folder}S2_Omics.svg')
+plt.savefig(f'{output_folder}S2_Omics.svg', bbox_inches='tight')
 plt.show()

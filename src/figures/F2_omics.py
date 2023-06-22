@@ -188,7 +188,7 @@ for dtype, col in zip(['Population', 'Raw', 'Scaled'], ['total', 'raw', 'smooth'
         linestyle=linestyle
     )
 
-axD.set_xlabel('Log$_2$(Ratio)')
+axD.set_xlabel('Log$_{2}$(Ratio)')
 axD.set_ylabel('Proportion')
 axD.legend(loc = 'lower right', handletextpad=0.2, frameon=False, handlelength=1)
 
@@ -296,5 +296,5 @@ for ax in [axA, axB, axC, axD, axE, axF]:
     ax.spines[['right', 'top']].set_visible(False)
     
 # gs.tight_layout(fig)
-plt.savefig(f'{output_folder}F2_Omics.svg')
+plt.savefig(f'{output_folder}F2_Omics.svg', bbox_inches='tight')
 plt.show()

@@ -492,6 +492,6 @@ def volcano(df, cat_col, palette, ax=None, x_range=None, upper=None, lower=None,
         ax.axhline(1.3, linestyle='--', color='black', linewidth=0.3)
         ax.axvline(upper, linestyle='--', color='black', linewidth=0.3)
         ax.axvline(lower, linestyle='--', color='black', linewidth=0.3)
-    ax.set_ylabel('- $Log_{10}$ (p-value)', labelpad=0.1)
-    ax.set_xlabel('$Log_2$(Ratio)', labelpad=-0.1)
+    ax.set_ylabel('- Log$_{10}$ (p-value)', labelpad=0.1)
+    ax.set_xlabel('Log$_{2}$(Ratio)', labelpad=-0.1)
     
