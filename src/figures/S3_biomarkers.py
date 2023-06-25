@@ -138,7 +138,7 @@ for dataset, ax in locs.items():
         ax=ax,
         zorder=1,
     )
-    ax.set_title(f'{dataset}')
+    ax.set_title(f'{dataset}', fontsize=8)
     ax.set_ylabel('ΔTDP-43 (ng/ml)')
     ax.set_xlabel('')
     ax.set_ylim(-0.2, 4.7)
