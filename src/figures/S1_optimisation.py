@@ -178,5 +178,5 @@ fig.add_artist(line)
 
 # Figure admin
 gs.tight_layout(fig)
-plt.savefig(f'{output_folder}S1_Optimisation.svg')
+plt.savefig(f'{output_folder}S1_Optimisation.svg', bbox_inches='tight')
 plt.show()

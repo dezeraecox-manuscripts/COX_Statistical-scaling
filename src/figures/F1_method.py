@@ -156,5 +156,5 @@ for x, y, width, height in boxes:
 # Figure admin
 axC.spines[['right', 'top']].set_visible(False)
 gs.tight_layout(fig)
-plt.savefig(f'{output_folder}F1_Simulated.svg')
+plt.savefig(f'{output_folder}F1_Simulated.svg', bbox_inches='tight')
 plt.show()
