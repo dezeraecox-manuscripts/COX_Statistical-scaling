@@ -1,5 +1,4 @@
 
-import matplotlib.patches as patches
 import os
 import pandas as pd
 import numpy as np
@@ -88,7 +87,6 @@ axes = {
     'E': [axE,  (-0.5, -0.15)],
     'F': [axF,  (-0.5, -0.15)],
     'G': [axG1,  (-0.5, -0.15)],
-
     'H': [axH1,  (-0.5, -0.15)],
 }
 
