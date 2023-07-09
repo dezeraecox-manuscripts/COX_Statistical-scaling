@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8128038.svg)](https://doi.org/10.5281/zenodo.8128038)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8127985.svg)](https://doi.org/10.5281/zenodo.8127985)
 
 
 # COX_Statistical-scaling

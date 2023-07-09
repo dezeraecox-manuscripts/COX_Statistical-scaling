@@ -9,6 +9,6 @@ authors:
     orcid: https://orcid.org/0000-0002-9965-2847
 title: "COX_Statistical-scaling"
 version: 0.1
-doi: "NA"
+doi: https://doi.org/10.5281/zenodo.8128038
 date-released: 2023-07-09
 url: "https://github.com/dezeraecox-manuscripts/COX_Statistical-scaling"
