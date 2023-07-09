@@ -151,7 +151,7 @@ axC1.axis('off')
 for ax, penalty_factor in zip([axC2, axC3, axC4, axC5], [2, 20, 200, 2000]):
     smooth_image = summary[['x', 'y', f'{penalty_factor}_smooth_value']].pivot('x', 'y', f'{penalty_factor}_smooth_value').values
     ax.imshow(smooth_image, cmap=plt.cm.gray)
-    ax.annotate(f'Penalty = {penalty}', xy=(48, 5), ha='right', color='white')
+    ax.annotate(f'Penalty = {penalty_factor}', xy=(48, 5), ha='right', color='white')
     ax.set(xticks=[], yticks=[])
     ax.axis('off')
 
