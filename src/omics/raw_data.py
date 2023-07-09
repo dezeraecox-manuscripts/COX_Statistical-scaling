@@ -39,7 +39,6 @@ if __name__ == "__main__":
 
         "DAlessandro_COVID_serum": 'https://pubs.acs.org/doi/suppl/10.1021/acs.jproteome.0c00365/suppl_file/pr0c00365_si_002.xlsx',
         "Di_COVID_serum": 'https://static-content.springer.com/esm/art%3A10.1038%2Fs41392-020-00333-1/MediaObjects/41392_2020_333_MOESM2_ESM.xls',
-        "Xu_COVID_plasma": 'https://pubs.acs.org/doi/suppl/10.1021/acsomega.1c01375/suppl_file/ao1c01375_si_002.xlsx' # only mean + pval
 
     }
 
