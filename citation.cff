@@ -1,10 +1,14 @@
 cff-version: 1.0.0
 message: "If you use this respository, please cite the manuscript alongside the following:"
 authors:
-  - family-names: 
-    given-names: 
-    orcid: https://orcid.org/
-title: ""
-version: 1.0
-doi: 
-date-released: 
+  - family-names: Cox
+    given-names: Dezerae
+    orcid: https://orcid.org/0000-0002-5345-8360
+  - family-names: Hatters
+    given-names: Danny M
+    orcid: https://orcid.org/0000-0002-9965-2847
+title: "COX_Statistical-scaling"
+version: 0.1
+doi: "NA"
+date-released: 2023-07-09
+url: "https://github.com/dezeraecox-manuscripts/COX_Statistical-scaling"
