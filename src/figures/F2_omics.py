@@ -9,7 +9,7 @@ from matplotlib.gridspec import GridSpec, GridSpecFromSubplotSpec
 import matplotlib.transforms as mtransforms
 from seaborn import blend_palette
 
-from src.utils import volcano
+from src.utils import volcano, plot_interpolated_ecdf
 from loguru import logger
 
 logger.info('Import OK')
@@ -172,7 +172,7 @@ axC.set_xlabel('Category', labelpad=0.2)
 
 # ------------Panel D------------
 
-for dtype, col in zip(['Population', 'Raw', 'Scaled'], ['total', 'raw', 'smooth']):
+for dtype, col in zip(['Raw', 'Scaled', 'Population', ], ['raw', 'smooth', 'total', ]):
     if col == 'total':
         linestyle='--'
     else:
@@ -182,7 +182,7 @@ for dtype, col in zip(['Population', 'Raw', 'Scaled'], ['total', 'raw', 'smooth'
         x=col,
         y='ecdf',
         color=palette[col],
-        linewidth=0.5,
+        linewidth=2,
         label=dtype,
         ax=axD,
         linestyle=linestyle
@@ -193,28 +193,23 @@ axD.set_ylabel('Proportion')
 axD.legend(loc = 'lower right', handletextpad=0.2, frameon=False, handlelength=1)
 
 # ------------Panel E------------
+# Prepare data shape
+distributions_melted = pd.melt(distribution_all.dropna(), id_vars=['ecdf', 'type', 'dataset'], value_vars=['total', 'raw', 'smooth'], value_name='interpolated', var_name='data_type')
 
-for dtype, col in zip(['Population', 'Raw', 'Scaled'], ['total', 'raw', 'smooth']):
-    if col == 'total':
-        linestyle='--'
-    else:
-        linestyle=None
-    sns.lineplot(
-        data=distribution_all.dropna(),
-        x='ecdf',
-        y=col,
-        color=palette[col],
-        linewidth=0.5,
-        label=dtype,
-        ax=axE,
-        linestyle=linestyle
-    )
-axE.set_ylim(-0.12, 0.12)
-axE.set_xlim(0, 1)
-axE.set_ylabel('Log$_2$(Ratio)', labelpad=1)
-axE.set_xlabel('Proportion')
-axE.legend(loc = 'upper left', handletextpad=0.2, frameon=False, handlelength=1)
+ 
+# Plot interpolated raw and scaled
+plot_interpolated_ecdf(distributions_melted[distributions_melted['data_type'] != 'total'], ycol='interplolated', huecol='data_type', palette=palette, ax=axE, orientation='h')
+    
+# Plot total line --
+plot_interpolated_ecdf(distributions_melted[distributions_melted['data_type'] == 'total'], ycol='interplolated', huecol='data_type', palette=palette, ax=axE, orientation='h', linestyles={'total': '--'})
 
+axE.set_xlim(-0.12, 0.12)
+axE.set_ylim(0, 1)
+axE.set_xlabel('Log$_2$(Ratio)', labelpad=1)
+axE.set_ylabel('Proportion')
+handles, labels = axE.get_legend_handles_labels()
+labels = ['Population', 'Raw', 'Scaled']
+axE.legend(handles, labels, loc = 'upper left', handletextpad=0.2, frameon=False, handlelength=1, borderaxespad=0.1)
 
 # ------------Panel F------------
 distances

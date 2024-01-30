@@ -494,4 +494,69 @@ def volcano(df, cat_col, palette, ax=None, x_range=None, upper=None, lower=None,
         ax.axvline(lower, linestyle='--', color='black', linewidth=0.3)
     ax.set_ylabel('- Log$_{10}$ (p-value)', labelpad=0.1)
     ax.set_xlabel('Log$_{2}$(Ratio)', labelpad=-0.1)
-    
+
+
+def plot_interpolated_ecdf(fitted_ecdfs, ycol, huecol, palette, ax=None, orientation=None, linestyles=None, linewidths=None):
+    """Generate fitted cumulative distribution
+
+    Args:
+        fitted_ecdfs (dataframe): Dataframe containing interpolated cumulative distributions
+        ycol (str): Value of the cumulative distribution
+        huecol (str): Column on which the hue is based
+        palette (dictionary): Dictionary containing the palette
+        ax (str, optional): Subpanel number in multipanel figures. Defaults to None.
+        orientation (str, optional): Orientation of the plot, typically h. Defaults to None.
+        linestyles (dict, optional): For horizontal plots only - sets style(s) of each hue. Defaults to None.
+        linewidths (dict, optional): For horizontal plots only - sets width(s) of each hue. Defaults to None.
+
+    Returns:
+        _type_: _description_
+    """
+
+    if not ax:
+        fig, ax = plt.subplots()
+
+    if orientation == 'h':
+        means = fitted_ecdfs[fitted_ecdfs['type'] == 'interpolated'].groupby(
+            [huecol, 'ecdf']).agg(['mean', 'std']).reset_index()
+        means.columns = [huecol, 'ecdf', 'mean', 'std']
+        means['pos_err'] = means['mean'] + means['std']
+        means['neg_err'] = means['mean'] - means['std']
+
+        for hue, data in means.groupby([huecol]):
+            if linestyles:
+                linestyle = linestyles[hue] 
+            else:
+                linestyle = None
+            if linewidths:
+                linewidth = linewidths[hue] 
+            else:
+                linewidth = None
+            ax.plot(
+                data['mean'],
+                data['ecdf'],
+                color=palette[hue],
+                label=hue,
+                linestyle=linestyle,
+                linewidth=linewidth
+            )
+            ax.fill_betweenx(
+                y=data['ecdf'].tolist(),
+                x1=(data['neg_err']).tolist(),
+                x2=(data['pos_err']).tolist(),
+                color=palette[hue],
+                alpha=0.3
+            )
+
+    else:
+        sns.lineplot(
+            data=fitted_ecdfs,
+            y=ycol,
+            x='ecdf',
+            hue=huecol,
+            palette=palette,
+            ci='sd',
+            ax=ax,
+        )
+
+    return fitted_ecdfs, ax
