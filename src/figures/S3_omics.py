@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.gridspec import GridSpec, GridSpecFromSubplotSpec
 import matplotlib.transforms as mtransforms
-import ptitprince as pt
 
 from src.utils import volcano
 
@@ -326,5 +325,5 @@ for source, data in correlations.groupby('source'):
 for ax in [axA, axB, axC, axD, axE, axF, axG, axH, axI, axJ]:
     ax.spines[['right', 'top']].set_visible(False)
     
-plt.savefig(f'{output_folder}S2_Omics.svg', bbox_inches='tight')
+plt.savefig(f'{output_folder}S3_Omics.svg', bbox_inches='tight')
 plt.show()

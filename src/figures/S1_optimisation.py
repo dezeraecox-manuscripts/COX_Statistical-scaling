@@ -60,28 +60,45 @@ factors = sorted(smoothed_data['penalty_factor'].unique().tolist())
 summary = pd.read_csv(f'{input_folder}images/smoothed_summary.csv')
 summary.drop([col for col in summary.columns.tolist() if 'Unnamed: ' in col], axis=1, inplace=True)
 
+from skimage.data import colorwheel
+original_colorwheel = colorwheel()
+
+colorwheel = pd.read_csv(f'{input_folder}images/smoothed_colorwheel.csv')
+colorwheel.drop([col for col in colorwheel.columns.tolist() if 'Unnamed: ' in col], axis=1, inplace=True)
+
+
+
 # ==============Generate figure==============
 # Figure defaults
-fig = plt.figure(figsize=(18*cm, 11*cm))
+fig = plt.figure(figsize=(18*cm, 6*2.5*cm))
                             
 # make outer gridspec
-gs = GridSpec(2, 1, figure=fig, height_ratios = [1, 1], hspace=0.1) 
+gs = GridSpec(3, 1, figure=fig, height_ratios=[1, 0.8, 0.8], hspace=0.05) 
 # make nested gridspecs
 gs1 = GridSpecFromSubplotSpec(1, 2, subplot_spec = gs[0], wspace = 0.5)
 gs2 = GridSpecFromSubplotSpec(1, 5, subplot_spec = gs[1], wspace = 0.1)
+gs3 = GridSpecFromSubplotSpec(1, 5, subplot_spec = gs[2], wspace = 0.1)
 # add axes
 axA = fig.add_subplot(gs1[0, 0])
 axB = fig.add_subplot(gs1[0, 1])
+
 axC1 = fig.add_subplot(gs2[0, 0])
 axC2 = fig.add_subplot(gs2[0, 1])
 axC3 = fig.add_subplot(gs2[0, 2])
 axC4 = fig.add_subplot(gs2[0, 3])
 axC5 = fig.add_subplot(gs2[0, 4])
 
+axD1 = fig.add_subplot(gs3[0, 0])
+axD2 = fig.add_subplot(gs3[0, 1])
+axD3 = fig.add_subplot(gs3[0, 2])
+axD4 = fig.add_subplot(gs3[0, 3])
+axD5 = fig.add_subplot(gs3[0, 4])
+
 axes = {
     'A': [axA,  (-0.4, -0.15)], 
     'B': [axB,  (-0.5, -0.15)], 
     'C': [axC1,  (-0.4, -0.15)],
+    'D': [axD1,  (-0.4, -0.15)],
 }
 
 # Panel labels
@@ -173,10 +190,59 @@ xmax = np.array(list(map(lambda b: b.x1, bboxes.flat))).reshape(axes.shape).max(
 xmin = np.array(list(map(lambda b: b.x0, bboxes.flat))).reshape(axes.shape).min()
 
 # Draw a horizontal line at those coordinates
-line = plt.Line2D([0.245, 0.891],[0.1, 0.1], transform=fig.transFigure, color="black")
+line = plt.Line2D([0.2445, 0.89],[0.36, 0.36], transform=fig.transFigure, color="black")
+fig.add_artist(line)
+
+
+# ------------Panel D------------
+
+axD1.imshow(original_colorwheel)
+axD1.set(xticks=[], yticks=[])
+axD1.axis('off')
+
+smooth_image = colorwheel[['x', 'y', 'noised_mean']].pivot('x', 'y', 'noised_mean').values
+noise_wheel = original_colorwheel.copy()
+noise_wheel[:, :, 0] = smooth_image
+axD2.imshow(noise_wheel)
+axD2.axis('off')
+
+for ax, penalty_factor in zip([axD3, axD4, axD5], [2, 200, 2000]):
+    smooth_image = colorwheel[['x', 'y', f'{penalty_factor}_smooth_value']].pivot('x', 'y', f'{penalty_factor}_smooth_value').values
+    noise_wheel = original_colorwheel.copy()
+    noise_wheel[:, :, 0] = smooth_image
+    ax.imshow(noise_wheel)
+    ax.annotate(f'Penalty = {penalty_factor}', xy=(360, 41), ha='right', color='white')
+    ax.set(xticks=[], yticks=[])
+    ax.axis('off')
+
+# Add annotations   
+trans = axD1.get_xaxis_transform() 
+axD1.annotate('Original\nimage', xy=(200, -0.1), xycoords=trans, ha="center", va="top")
+
+trans = axD2.get_xaxis_transform() 
+axD2.annotate('Mean of 5\nnoised images', xy=(200, -0.1), xycoords=trans, ha="center", va="top")
+
+trans = axD4.get_xaxis_transform() 
+axD4.annotate('Scaled from 5 noised images', xy=(200, -0.2), xycoords=trans, ha="center", va="top")
+
+# Get the bounding boxes of the axes including text decorations
+axes = np.array([axD3, axD4, axD5])
+r = fig.canvas.get_renderer()
+get_bbox = lambda ax: ax.get_tightbbox(r).transformed(fig.transFigure.inverted())
+bboxes = np.array(list(map(get_bbox, axes)), mtransforms.Bbox).reshape(axes.shape)
+
+#Get the minimum and maximum extent, get the coordinate half-way between those
+xmax = np.array(list(map(lambda b: b.x1, bboxes.flat))).reshape(axes.shape).max()
+xmin = np.array(list(map(lambda b: b.x0, bboxes.flat))).reshape(axes.shape).min()
+
+# Draw a horizontal line at those coordinates
+line = plt.Line2D([0.41, 0.89],[0.057, 0.057], transform=fig.transFigure, color="black")
 fig.add_artist(line)
 
 # Figure admin
 gs.tight_layout(fig)
+
 plt.savefig(f'{output_folder}S1_Optimisation.svg', bbox_inches='tight')
 plt.show()
+
+

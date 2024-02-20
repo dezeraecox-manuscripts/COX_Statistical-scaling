@@ -132,10 +132,11 @@ for label, (ax, xy) in axes.items():
 # ------------Panel A------------
 
 volcano(df=complete_volcano, cat_col='category', palette=volc_config, ax=axA, x_range=cv_range, upper=cv_upper, lower=cv_lower, size=10)
-
+axA.annotate('$n$ = 137', xy=(0.05,0.65), ha='left', xycoords='axes fraction')
 # ------------Panel B------------
 
 volcano(df=sampled_volc_rep, cat_col='category', palette=volc_config, ax=axB, x_range=sv_range, upper=sv_upper, lower=sv_lower, size=10)
+axB.annotate('$n$ = 5', xy=(0.05,0.65), ha='left', xycoords='axes fraction')
 
 # ------------Panel C------------
 lower, upper = effect[['lower', 'upper']].values[0]

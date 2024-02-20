@@ -139,7 +139,7 @@ for dataset, ax in locs.items():
         zorder=1,
     )
     ax.set_title(f'{dataset}', fontsize=8)
-    ax.set_ylabel('ΔTDP-43 (ng/ml)')
+    ax.set_ylabel('ΔTDP-43')
     ax.set_xlabel('')
     ax.set_ylim(-0.2, 4.7)
     ax.legend('', frameon=False)
@@ -167,7 +167,7 @@ for source, ax in locs.items():
     ax.axvline(df.groupby('label').mean().reset_index()['norm_value'].tolist()[0], color='#4B1D3F', linewidth=1, linestyle='--')
     ax.set_xlim(0,4)
     if source == 'FTLD':
-        ax.set_xlabel('ΔTDP-43 (ng/ml)')
+        ax.set_xlabel('ΔTDP-43')
     else:
         ax.set_xlabel('')
     ax.annotate(source, xy=(0, 1.1), xycoords='axes fraction', color=palette[f'{source}_dark'], )
@@ -214,7 +214,7 @@ for source, ax in locs.items():
     ax.set_ylim(-0.1, 2.1)
     ax.set_xlim(-0.25, 0.25)
     ax.axhline(1, linestyle='--', color='grey')
-    ax.set_ylabel('ΔTDP-43 (ng/ml)')
+    ax.set_ylabel('ΔTDP-43')
     ax.set_xlabel('')
     if source == 'FTLD':
         y = 0.65
@@ -227,5 +227,5 @@ for source, ax in locs.items():
 for ax in [axA, axB, axC, axD, axE, axF, axG1, axG2, axG3, axH1, axH2, axH3,]:
     ax.spines[['right', 'top']].set_visible(False)
 
-plt.savefig(f'{output_folder}S3_Biomarkers.svg', bbox_inches='tight')
+plt.savefig(f'{output_folder}S4_Biomarkers.svg', bbox_inches='tight')
 plt.show()

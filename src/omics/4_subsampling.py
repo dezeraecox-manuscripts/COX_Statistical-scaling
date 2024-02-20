@@ -15,8 +15,6 @@ logger.info('Import OK')
 input_path = 'results/omics/compiled.csv'
 output_folder = 'results/omics/'
 
-num_reps = 4 # number of replicates to collect when subsampling
-penalty = 10*num_reps # penalty for pVal smoothing
 num_combinations = 100
 # Set seed for reproducibility
 np.random.seed(10301)
@@ -61,6 +59,7 @@ compiled = compiled[compiled['dataset'].isin(['Bader'])].copy()
 if not os.path.exists(f'{output_folder}sampled_compiled.csv'):
     sampled = []
     for num_reps in [3, 5]:
+        penalty = 10*num_reps # penalty for pVal smoothing
         
         logger.info(f'{num_reps}: {len(compiled["replicate"].unique().tolist())}')
         # Generate all possible combination subsets
