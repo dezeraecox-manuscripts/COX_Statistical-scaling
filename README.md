@@ -1,10 +1,13 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8128038.svg)](https://doi.org/10.5281/zenodo.8128038)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8127985.svg)](https://doi.org/10.5281/zenodo.8127985)
 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/dezeraecox-manuscripts/COX_Statistical-scaling/HEAD?labpath=examples%2Fsimulated.ipynb)
 
 # COX_Statistical-scaling
 
-This repository contains the analysis code associated with the Statistical Scaling project, led by Dr. Dezerae Cox. This manuscript has been submitted for publication under the title *"Statistical Scaling: A Nuanced Alternative to p-value Thresholding for Variable Biological Datasets"*
+This repository contains the analysis code associated with the Statistical Scaling project, led by Dr. Dezerae Cox. This manuscript has been submitted for publication under the title *"PERCEPT: Replacing binary p-value thresholding with scaling for more nuanced identification of sample differences "*
+
+> 🚨 Keen to see PERCEPT in action? Want to try it out with your data? Click on the ```launch binder``` badge above to open an interactive walk through. Alternatively, you can find a ready-to-use spreadsheet template for manual applications in the [```examples```](examples/) folder.
 
 ## Prerequisites
 
